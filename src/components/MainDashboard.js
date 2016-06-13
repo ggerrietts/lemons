@@ -2,7 +2,7 @@ import React, { Component, PropTypes } from 'react';
 
 import WeatherPanelContainer from "../containers/WeatherPanelContainer";
 import LedgerPanelContainer from "../containers/LedgerPanelContainer";
-import IngredientPanel from "./IngredientPanel";
+import IngredientPanelContainer from "../containers/IngredientPanelContainer";
 import InventoryPanel from "./InventoryPanel";
 
 const MainDashboard = () => (
@@ -14,7 +14,7 @@ const MainDashboard = () => (
             <div className="col-sm-8"><LedgerPanelContainer /></div>
         </div>
         <div id="supplies" className="row">
-            <div className="col-sm-6"><IngredientPanel /></div>
+            <div className="col-sm-6"><IngredientPanelContainer /></div>
             <div className="col-sm-6"><InventoryPanel /></div>
         </div>
     </div>

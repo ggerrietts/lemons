@@ -1,5 +1,6 @@
 import { fromJS } from 'immutable';
 import _ from 'lodash';
+import moment from 'moment';
 
 export const weatherTypes = [
     { 
@@ -40,3 +41,7 @@ export const weatherByNumber = (number) => {
     return fromJS(weather);
 };
 
+export const advanceTime = (state, amount) => {
+    let oldNow = state.get('time');
+    return state.set('last', oldNow).set('time', moment(oldNow).add(amount, 'hours'));
+};

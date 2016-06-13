@@ -11,19 +11,20 @@ development techniques.
 - [x] get app laid out
 - [x] get package.json written "well enough"
 - [x] render a thing to get started
-- [ ] wire in the "advance time" buttons
-  - [ ] write dispatchable functions
-  - [ ] write actions
-  - [ ] update the reducers
+- [x] wire in the "advance time" buttons
+  - [x] write dispatchable functions
+  - [x] write actions
+  - [x] update the reducers
+- [ ] switch to koa
 - [ ] get ingredients state assembled
-  - [ ] write reducer & initial state
-  - [ ] write Container
-  - [ ] reformat the panel
+  - [x] write reducer & initial state
+  - [x] write Container
+  - [x] reformat the panel
 - [ ] hook up "purchase" buttons
 - [ ] get inventory state assembled
 - [ ] hook up "brew" buttons
 - [ ] revisit ledger
+- [ ] revisit weather: temp
 - [ ] write in a simple sales formula
-- [ ] switch to koa
 - [ ] add passport
 - [ ] add postgres

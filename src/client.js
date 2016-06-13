@@ -10,7 +10,7 @@ import * as reducers from './reducers';
 
 import MainDashboard from './components/MainDashboard';
 
-const store = createStore(combineReducers(reducers));
+const store = createStore(combineReducers(reducers), {}, window.devToolsExtension ? window.devToolsExtension() : f => f);
 
 const history = syncHistoryWithStore(browserHistory, store, {selectLocationState: routingSelector});
 

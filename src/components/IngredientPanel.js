@@ -1,4 +1,5 @@
 import React, { Component, PropTypes } from 'react';
+import _ from 'lodash';
 
 /* 2 lb lemons $2/lb
  * 1 lb sugar $5/10 lb
@@ -7,19 +8,25 @@ import React, { Component, PropTypes } from 'react';
  * 10 servings
  */
 
-class IngredientPanel extends Component {
-    render() {
-        return (
-            <div id="ingredients" className="panel panel-default">
-                <div className="panel-heading">
-                    <h3 className="panel-title">Ingredient Inventory</h3>
-                </div>
-                <div className="panel-body">
-                    Sugar, Lemons, Water
-                </div>
-            </div>
-    );
-    }
-}
+const IngredientPanel = ({ ingredients, onPurchaseClick }) => (
+    <div id="ingredients" className="panel panel-default">
+        <div className="panel-heading">
+            <h3 className="panel-title">Ingredient Inventory</h3>
+        </div>
+        <table className="table">
+        <thead><tr><th>Ingredient</th><th>Amount</th><th>Price</th><th>&nbsp;</th></tr></thead>
+        <tbody>{ _.values(ingredients).map(function (row) {
+            return ( 
+                <tr key={ row.kind }>
+                  <td>{ row.kind }</td>
+                  <td>{ row.amount } { row.unit }</td>
+                  <td>${ row.price.toFixed(2) }/{ row.unit }</td>
+                  <td><button className="btn btn-default btn-block" onClick={()=>onPurchaseClick(row.kind)}>+</button></td>
+                </tr>
+        )
+        })}</tbody>
+        </table>
+    </div>
+);
 
 export default IngredientPanel;

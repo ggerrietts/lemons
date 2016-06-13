@@ -4,7 +4,7 @@ import LedgerPanel from '../components/LedgerPanel.js';
 
 
 const mapStateToProps = (state) => {
-    return {...state.ledger.toJS()};
+    return {...state.lemons.get('ledger').toJS()};
 }
 
 
