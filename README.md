@@ -15,14 +15,17 @@ development techniques.
   - [x] write dispatchable functions
   - [x] write actions
   - [x] update the reducers
-- [ ] switch to koa
-- [ ] get ingredients state assembled
+- [x] switch to koa
+- [x] get ingredients state assembled
   - [x] write reducer & initial state
   - [x] write Container
   - [x] reformat the panel
-- [ ] hook up "purchase" buttons
-- [ ] get inventory state assembled
+- [x] hook up "purchase" buttons
+- [x] get inventory state assembled
 - [ ] hook up "brew" buttons
+  - [ ] write the UI
+  - [ ] build actions
+  - [ ] hook in reducers
 - [ ] revisit ledger
 - [ ] revisit weather: temp
 - [ ] write in a simple sales formula

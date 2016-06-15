@@ -1,4 +1,7 @@
-import express from 'express';
+import koa from 'koa';
+import kstatic from 'koa-static';
 import path from 'path';
 
-express().use(express.static(path.resolve(__dirname, 'public'))).listen(8888)
+const app = koa();
+
+app.use(kstatic(path.resolve(__dirname, 'public'))).listen(8888);
