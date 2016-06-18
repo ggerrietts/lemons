@@ -23,9 +23,11 @@ development techniques.
 - [x] hook up "purchase" buttons
 - [x] get inventory state assembled
 - [ ] hook up "brew" buttons
-  - [ ] write the UI
+  - [x] write the UI
+  - [x] hook in reducers
   - [ ] build actions
-  - [ ] hook in reducers
+  - [ ] write action reducer
+- [x] fix and shore up tests
 - [ ] revisit ledger
 - [ ] revisit weather: temp
 - [ ] write in a simple sales formula

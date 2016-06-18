@@ -4,13 +4,13 @@ jest.unmock('../reducers.js');
 jest.unmock('react-router-redux');
 
 import { Map, fromJS } from 'immutable';
-import { routing, ledger } from '../reducers';
+import { routing, lemons } from '../reducers';
 import { LOCATION_CHANGE } from 'react-router-redux';
 
-describe('ledger', () => {
+describe('lemons', () => {
     it('returns identity', () => {
         const initialState = Map();
-        expect(ledger(initialState, {})).toEqual(Map());
+        expect(lemons(initialState, {})).toEqual(Map());
     })
 });
 

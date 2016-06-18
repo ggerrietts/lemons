@@ -7,9 +7,9 @@ import { currentTimeSelector, weatherLabelSelectorFactory } from '../selectors';
 
 const mapStateToProps = (state) => {
     return {
-        time: currentTimeSelector(state.lemons),
-        weather: weatherLabelSelectorFactory('weatherActual')(state.lemons),
-        forecast: weatherLabelSelectorFactory('weatherForecast')(state.lemons)
+        time: currentTimeSelector(state),
+        weather: weatherLabelSelectorFactory('weatherActual')(state),
+        forecast: weatherLabelSelectorFactory('weatherForecast')(state)
     };
 };
 

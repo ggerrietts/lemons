@@ -38,32 +38,50 @@ const initialTimeState = fromJS({
     last: moment(new Date(2015,6,1,8,0,0,0))
 });
 
-const initialIngredientState = fromJS({
-    "water": {
+const initialIngredientState = fromJS([{
+        name: "water",
         kind: "water",
-        amount: 0,
+        amount: 2,
         unit: "gal",
         price: 1.00
-    }, 
-    "lemons": {
+    }, {
+        name: "lemons",
         kind: "lemons",
-        amount: 0,
+        amount: 4,
         unit: "lb",
         price: 2.00
-    }, 
-    "sugar": {
+    }, {
+        name: "sugar",
         kind: "sugar",
-        amount: 0,
+        amount: 2,
         unit: "lb",
         price: 0.5
-    }
-});
+}]);
 
-const initialLemonsState = Map({
+const initialRecipeState = fromJS([
+    { 
+        "name": "lemonade",
+        "servings": 10,
+        "ingredients": [
+            {"name": "lemons", "amount": 2},
+            {"name": "sugar", "amount": 1},
+            {"name": "water", "amount": 1}
+        ]
+    }
+]);
+
+const initialInventoryState = fromJS([
+    {"recipe": "lemonade", "servings": 10}
+]);
+
+
+export const initialLemonsState = Map({
     ingredients: initialIngredientState,
+    inventory: initialInventoryState,
     time: initialTimeState,
     weather: initialWeatherState,
-    ledger: initialLedgerState
+    ledger: initialLedgerState,
+    recipes: initialRecipeState
 });
 
 export function lemons(state = initialLemonsState, action) {

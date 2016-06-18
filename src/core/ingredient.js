@@ -11,8 +11,6 @@ export const processPurchase = (state, kind) => {
                         .setIn(['ledger', 'totalCost'], state.getIn(['ledger', 'totalCost']) + cost)
                         .setIn(['ingredients', kind, 'amount'], state.getIn(['ingredients', kind, 'amount']) + 1));
 
-    console.log(state.toJS());
-    console.log(newState.toJS());
 
     return newState
 };
