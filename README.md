@@ -8,6 +8,8 @@ development techniques.
 
 ## TODO
 
+- [ ] be sure moment, lodash, router, redux, sagas all in
+- [ ] offload a lot of the date logic to the backend
 - [ ] remove immutable
 - [ ] inline "container" elements
 - [ ] build "modules"
