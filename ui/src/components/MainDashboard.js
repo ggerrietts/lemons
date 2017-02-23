@@ -5,7 +5,7 @@ import LedgerPanelContainer from "../containers/LedgerPanelContainer";
 import IngredientPanelContainer from "../containers/IngredientPanelContainer";
 import InventoryPanelContainer from "../containers/InventoryPanelContainer";
 
-const MainDashboard = () => (
+export const MainDashboard = () => (
     <div>
         <div className="page-header">
         <h1><img src="img/mr-lemons.svg" height="75"/> Mister Lemons</h1></div>
@@ -19,5 +19,3 @@ const MainDashboard = () => (
         </div>
     </div>
 );
-
-export default MainDashboard;

@@ -1,6 +1,7 @@
 import React, { PropTypes } from 'react';
+import { connect } from 'react-redux';
 
-const LedgerPanel = ({startingBalance, totalCost, totalSales, currentBalance}) => (
+export const LedgerPanel = ({startingBalance, totalCost, totalSales, currentBalance}) => (
     <div id="ledger" className="panel panel-default">
         <div className="panel-heading">
             <h3 className="panel-title">Ledger</h3>
@@ -36,5 +37,10 @@ LedgerPanel.propTypes = {
 };
 
 
-export default LedgerPanel;
+const mapStateToProps = (state) => {
+    return {...state.lemons.get('ledger').toJS()};
+}
+
+
+export const LedgerPanelContainer = connect(mapStateToProps)(LedgerPanel);
 

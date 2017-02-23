@@ -1,3 +1,10 @@
+
+const initialInventoryState = fromJS([
+    {"recipe": "lemonade", "servings": 10}
+]);
+
+
+// should be rewritten as a selector
 // { name: "lemonade", on_hand: 10, yield: 10, batches: 2 }
 //
 import { Map } from 'immutable';

@@ -1,6 +1,23 @@
-import { fromJS } from 'immutable';
-import moment from 'moment';
 
+const INITIAL_STATE = {
+    currentBalance: 10.0,
+    totalSales: 0,
+    totalCost: 0,
+    startingBalance: 10.0
+};
+
+// actions
+const PURCHASE = 'ledger/PURCHASE';
+const SALE = 'ledger/SALE';
+
+// action creators
+// XXX
+
+
+// sagas
+// XXX
+
+// XXX: this thing should generate some actions instead of fucking with the state tree
 export const processPurchase = (state, kind) => {
     let cash = state.getIn(['ledger', 'currentBalance']);
     let cost = state.getIn(['ingredients', kind, 'price']);
@@ -14,3 +31,13 @@ export const processPurchase = (state, kind) => {
 
     return newState
 };
+
+export const ledgerReducer = (state=INITIAL_STATE, action) => {
+  switch (action.type) {
+    case PURCHASE:
+      return processPurchase(state, action.kind);
+    default:
+      return state;
+  }
+};
+

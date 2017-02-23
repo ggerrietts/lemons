@@ -1,4 +1,6 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import { purchase } from '../actions/ingredientActions.js';
 import _ from 'lodash';
 
 /* 2 lb lemons $2/lb
@@ -8,7 +10,7 @@ import _ from 'lodash';
  * 10 servings
  */
 
-const IngredientPanel = ({ ingredients, onPurchaseClick }) => (
+export const IngredientPanel = ({ ingredients, onPurchaseClick }) => (
     <div id="ingredients" className="panel panel-default">
         <div className="panel-heading">
             <h3 className="panel-title">Ingredient Inventory</h3>
@@ -29,4 +31,18 @@ const IngredientPanel = ({ ingredients, onPurchaseClick }) => (
     </div>
 );
 
-export default IngredientPanel;
+
+// Connector
+const mapStateToProps = (state) => {
+    return {ingredients: state.ingredients};
+}
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onPurchaseClick: (kind) => {
+      dispatch(purchase(kind))
+    }
+  }
+}
+
+export const IngredientPanelConnector = connect(mapStateToProps, mapDispatchToProps)(IngredientPanel);

@@ -1,6 +1,12 @@
 import React, { Component, PropTypes } from 'react';
+import { connect } from 'react-redux';
+import WeatherPanel from '../components/WeatherPanel';
+import { advanceTime } from '../actions/weatherActions';
 
-const WeatherPanel = ({time, weather, forecast, onAdvanceClick}) => (
+import { currentTimeSelector, weatherLabelSelectorFactory } from '../selectors';
+
+
+export const WeatherPanel = ({time, weather, forecast, onAdvanceClick}) => (
     <div id="weather" className="panel panel-default">
         <div className="panel-heading">
             <h3 className="panel-title">Time &amp; Weather</h3>
@@ -36,4 +42,21 @@ WeatherPanel.propTypes = {
 };
 
 
-export default WeatherPanel;
+const mapStateToProps = (state) => {
+    return {
+        time: currentTimeSelector(state),
+        weather: weatherLabelSelectorFactory('weatherActual')(state),
+        forecast: weatherLabelSelectorFactory('weatherForecast')(state)
+    };
+};
+
+const mapDispatchToProps = (dispatch) => {
+  return {
+    onAdvanceClick: (amt) => {
+      dispatch(advanceTime(amt))
+    }
+  }
+}
+
+
+export const WeatherPanelContainer = connect(mapStateToProps, mapDispatchToProps)(WeatherPanel);

@@ -1,7 +1,12 @@
 import React, { Component, PropTypes } from 'react';
 import _ from 'lodash';
+import { connect } from 'react-redux';
+import { inventoryDisplaySelector } from '../selectors.js';
+import InventoryPanel from '../components/InventoryPanel.js';
 
-const InventoryPanel = ({recipes}) => (
+// import { purchase } from '../actions/ingredientActions.js';
+
+export const InventoryPanel = ({recipes}) => (
     <div id="inventory" className="panel panel-default">
         <div className="panel-heading">
             <h3 className="panel-title">Prepared Inventory</h3>
@@ -24,4 +29,18 @@ const InventoryPanel = ({recipes}) => (
     </div>
 );
 
-export default InventoryPanel;
+const mapStateToProps = (state) => {
+    const recs = inventoryDisplaySelector(state);
+    return {recipes: recs};
+}
+
+// const mapDispatchToProps = (dispatch) => {
+//   return {
+//     onPurchaseClick: (kind) => {
+//       dispatch(purchase(kind))
+//     }
+//   }
+// }
+
+export const InventoryPanelConnector = connect(mapStateToProps)(InventoryPanel);
+// export const IngredientPanelConnector = connect(mapStateToProps, mapDispatchToProps)(IngredientPanel);
