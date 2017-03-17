@@ -1,0 +1,2 @@
+CREATE DATABASE IF NOT EXISTS lemons COLLATE 'utf8_general_ci';
+SHOW DATABASES LIKE 'lemons';
