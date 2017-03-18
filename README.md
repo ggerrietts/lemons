@@ -8,26 +8,21 @@ development techniques.
 
 ## TODO
 
-- [x] docker-compose file
-- [x] schema creation
-- [x] bind addr, db string env vars
-- [x] user, session API finalized
-- [x] db integration
-  - [x] re-integrate with sqlx
-    - [x] add models to models.go
-    - [x] add fetch / mutate functions for models
-  - [x] dump scripts
 - [x] clean auth/auth.go out of auth/service.go
 - [x] add logging to auth middleware
-- [ ] test remaining endpoints
-- [ ] finish mutations
+- [x] handle sql nullable type
+- [x] test remaining endpoints
+- [ ] make login store last login time
 - [ ] get front end loading
-- [ ] be sure moment, lodash, router, redux, sagas all in
-- [ ] offload a lot of the date logic to the backend
 - [ ] remove immutable
 - [ ] inline "container" elements
 - [ ] build "modules"
 - [ ] revise state shape
+- [ ] be sure moment, lodash, router, redux, sagas all in
+- [ ] integrate authentication / login
+- [ ] restructure around passed-in cfg & db (closures)
+- [ ] offload a lot of the date logic to the backend
+- [ ] finish user mutations
 - [ ] spend some time on the domain model
 - [ ] hook up "brew" buttons
   - [x] write the UI

@@ -5,6 +5,7 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ggerrietts/lemons/svc/util"
 	"gopkg.in/gin-gonic/gin.v1"
+	"gopkg.in/guregu/null.v3"
 	"log"
 	"net/http"
 	"time"
@@ -46,6 +47,7 @@ func unauthorized(c *gin.Context, code int, message string) {
 		"code":    code,
 		"message": message,
 	})
+	c.Abort()
 }
 
 func setNewCookie(c *gin.Context, userId int64) error {
@@ -95,6 +97,13 @@ func postLogin(c *gin.Context) {
 		unauthorized(c, http.StatusInternalServerError, "Internal server error.")
 		return
 	}
+	user.LastLoginAt = null.TimeFrom(time.Now())
+	err = user.Update(db, user.OmitForFields([]string{"LastLoginAt"}))
+	if err != nil {
+		lemonutils.GinDebug("Error: failed updating last login", err)
+		// let this one pass
+	}
+
 	c.JSON(http.StatusOK, gin.H{"result": "OK"})
 }
 
@@ -130,17 +139,19 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// extract claims
-		userId, id_ok := claims["id"].(int64)
-		issued, iss_ok := time.Unix(claims["orig_iat"].(int64), 0)
+		userId, id_ok := claims["id"].(float64)
+		issuedTs, iss_ok := claims["iat"].(float64)
 		if !(id_ok && iss_ok) {
 			lemonutils.GinDebug("ERROR: type assertions failed -- id", id_ok, "iss", iss_ok)
 			unauthorized(c, http.StatusBadRequest, "invalid token values")
 			return
 		}
 
+		issued := time.Unix(int64(issuedTs), 0)
+
 		// create new cookie maybe
 		if time.Now().After(issued.Add(time.Hour)) {
-			cookieFail := setNewCookie(c, userId)
+			cookieFail := setNewCookie(c, int64(userId))
 			if cookieFail != nil {
 				// we'll let this slide i guess
 				log.Printf("error refreshing token: %v", err)
@@ -148,7 +159,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// set userId into context
-		c.Set("userId", userId)
+		c.Set("userId", int64(userId))
 		c.Next()
 	}
 }

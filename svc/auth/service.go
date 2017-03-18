@@ -4,7 +4,6 @@ import (
 	"errors"
 	"github.com/ggerrietts/lemons/svc/util"
 	"gopkg.in/gin-gonic/gin.v1"
-	"log"
 	"net/http"
 	"strconv"
 )
@@ -45,7 +44,7 @@ func postUser(ctx *gin.Context) {
 		lemonutils.GinDebug("Error: database failure", err)
 		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "database failure"})
 	} else {
-		// TODO: should sanitize u before return
+		u.Sanitize()
 		ctx.JSON(http.StatusOK, gin.H{"result": u})
 	}
 }
@@ -70,7 +69,7 @@ func getUser(ctx *gin.Context) {
 		ctx.JSON(http.StatusNotFound, gin.H{"error": "record not found"})
 		return
 	}
-	user.Password = ""
+	user.Sanitize()
 	ctx.JSON(http.StatusOK, gin.H{"result": user})
 	return
 }

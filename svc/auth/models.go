@@ -1,20 +1,21 @@
 package lemonauth
 
 import (
-	"github.com/go-sql-driver/mysql"
+	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
+	"gopkg.in/guregu/null.v3"
 	"strings"
 	"time"
 )
 
 type User struct {
-	ID          int64          `json:"id,omitempty"`
-	Email       string         `json:"email"`
-	Name        string         `json:"name"`
-	Password    string         `json:"password"`
-	LastLoginAt mysql.NullTime `db:"last_login_at" json:"last_login_at"`
-	UpdatedAt   time.Time      `db:"updated_at" json:"updated_at"`
-	CreatedAt   time.Time      `db:"created_at" json:"created_at"`
+	ID          int64     `json:"id,omitempty"`
+	Email       string    `json:"email"`
+	Name        string    `json:"name"`
+	Password    string    `json:"password"`
+	LastLoginAt null.Time `db:"last_login_at" json:"last_login_at"`
+	UpdatedAt   time.Time `db:"updated_at" json:"updated_at"`
+	CreatedAt   time.Time `db:"created_at" json:"created_at"`
 }
 
 func GetUser(db *sqlx.DB, id int64) (User, error) {
@@ -33,6 +34,19 @@ func GetUserByEmail(db *sqlx.DB, email string) (User, error) {
 		return User{}, err
 	}
 	return u, nil
+}
+
+func (u *User) OmitForFields(fields []string) map[string]bool {
+	omits := map[string]bool{
+		"Email":       true,
+		"Name":        true,
+		"Password":    true,
+		"LastLoginAt": true,
+	}
+	for _, field := range fields {
+		omits[field] = false
+	}
+	return omits
 }
 
 func (u *User) Update(db *sqlx.DB, omit map[string]bool) error {
@@ -68,4 +82,8 @@ func (u *User) Create(db *sqlx.DB) error {
 		u.ID = id
 	}
 	return res_err
+}
+
+func (u *User) Sanitize() {
+	u.Password = ""
 }
