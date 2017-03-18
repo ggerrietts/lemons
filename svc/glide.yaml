@@ -1,7 +1,4 @@
 package: github.com/ggerrietts/lemons/svc
-ignore:
-- lemonauth
-- lemonutil
 import:
 - package: github.com/dgrijalva/jwt-go
   version: ^3.0.0
