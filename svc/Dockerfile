@@ -1,6 +1,7 @@
 FROM golang
 MAINTAINER Geoff Gerrietts <geoff@gerrietts.net>
 
+ADD ./vendor /go/src/github.com/ggerrietts/lemons/svc/vendor
 ADD . /go/src/github.com/ggerrietts/lemons/svc
 RUN go get -d -v github.com/ggerrietts/lemons/svc/...
 RUN go install -v github.com/ggerrietts/lemons/svc/...

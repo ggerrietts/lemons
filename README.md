@@ -1,9 +1,11 @@
-## Mister Lemons
+# Mister Lemons
 
 Mister Lemons is a lemonade stand simulator. Its evolution is partly an
 exercise in building the game, but mostly an exercise in learning various JS
 development techniques.
 
+## PSA to myself
+`glide` does not like symlinks.
 
 
 ## TODO
@@ -12,7 +14,8 @@ development techniques.
 - [x] add logging to auth middleware
 - [x] handle sql nullable type
 - [x] test remaining endpoints
-- [ ] make login store last login time
+- [x] make login store last login time
+- [x] fix the dockerfile for vendor
 - [ ] get front end loading
 - [ ] remove immutable
 - [ ] inline "container" elements
