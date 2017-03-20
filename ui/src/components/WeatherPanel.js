@@ -1,9 +1,9 @@
-import React, { Component, PropTypes } from 'react';
+import React, { PropTypes } from 'react';
 import { connect } from 'react-redux';
-import WeatherPanel from '../components/WeatherPanel';
-import { advanceTime } from '../actions/weatherActions';
+import { weatherForecast, currentTime, advanceTime } from '../modules/weather';
+// import { advanceTime } from '../actions/weatherActions';
 
-import { currentTimeSelector, weatherLabelSelectorFactory } from '../selectors';
+// import { currentTimeSelector, weatherLabelSelectorFactory } from '../selectors';
 
 
 export const WeatherPanel = ({time, weather, forecast, onAdvanceClick}) => (
@@ -15,11 +15,11 @@ export const WeatherPanel = ({time, weather, forecast, onAdvanceClick}) => (
             <tbody>
             <tr>
                 <td>Current Weather:</td>
-                <td>{ weather }</td>
+                <td>{ forecast.current.label }</td>
             </tr>
             <tr>
                 <td>Tomorrow's Forecast:</td>
-                <td>{ forecast }</td>
+                <td>{ forecast.forecast.label }</td>
             </tr>
             <tr>
                 <td>Current Time:</td>
@@ -36,18 +36,16 @@ export const WeatherPanel = ({time, weather, forecast, onAdvanceClick}) => (
 
 WeatherPanel.propTypes = {
   time: PropTypes.string.isRequired,
-  weather: PropTypes.string.isRequired,
-  forecast: PropTypes.string.isRequired,
+  forecast: PropTypes.object.isRequired,
   onAdvanceClick: PropTypes.func.isRequired
 };
 
 
 const mapStateToProps = (state) => {
-    return {
-        time: currentTimeSelector(state),
-        weather: weatherLabelSelectorFactory('weatherActual')(state),
-        forecast: weatherLabelSelectorFactory('weatherForecast')(state)
-    };
+  return {
+    time: currentTime(state),
+    forecast: weatherForecast(state)
+  };
 };
 
 const mapDispatchToProps = (dispatch) => {
@@ -59,4 +57,4 @@ const mapDispatchToProps = (dispatch) => {
 }
 
 
-export const WeatherPanelContainer = connect(mapStateToProps, mapDispatchToProps)(WeatherPanel);
+export const WeatherPanelConnector = connect(mapStateToProps, mapDispatchToProps)(WeatherPanel);

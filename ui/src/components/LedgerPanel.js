@@ -38,9 +38,9 @@ LedgerPanel.propTypes = {
 
 
 const mapStateToProps = (state) => {
-    return {...state.lemons.get('ledger').toJS()};
+    return { ...state.ledger };
 }
 
 
-export const LedgerPanelContainer = connect(mapStateToProps)(LedgerPanel);
+export const LedgerPanelConnector = connect(mapStateToProps)(LedgerPanel);
 

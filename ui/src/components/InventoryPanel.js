@@ -1,8 +1,7 @@
-import React, { Component, PropTypes } from 'react';
+import React from 'react';
 import _ from 'lodash';
 import { connect } from 'react-redux';
-import { inventoryDisplaySelector } from '../selectors.js';
-import InventoryPanel from '../components/InventoryPanel.js';
+// import { inventoryDisplaySelector } from '../selectors.js';
 
 // import { purchase } from '../actions/ingredientActions.js';
 
@@ -14,7 +13,6 @@ export const InventoryPanel = ({recipes}) => (
         <table className="table">
         <thead><tr><th>Recipe</th><th>Yield</th><th>Prepared</th><th>Batches Avail</th><th>&nbsp;</th></tr></thead>
         <tbody>{ recipes.map(function (rec) {
-            const ingred = recipes[name];
             return ( 
                 <tr key={ rec.get('name') }>
                   <td>{ rec.get('name') }</td>
@@ -30,8 +28,9 @@ export const InventoryPanel = ({recipes}) => (
 );
 
 const mapStateToProps = (state) => {
-    const recs = inventoryDisplaySelector(state);
-    return {recipes: recs};
+  const inventoryDisplaySelector = (state) => state.foo;
+  const recs = inventoryDisplaySelector(state);
+  return {recipes: recs};
 }
 
 // const mapDispatchToProps = (dispatch) => {

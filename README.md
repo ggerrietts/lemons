@@ -16,23 +16,43 @@ development techniques.
 - [x] test remaining endpoints
 - [x] make login store last login time
 - [x] fix the dockerfile for vendor
-- [ ] get front end loading
-- [ ] remove immutable
-- [ ] inline "container" elements
-- [ ] build "modules"
-- [ ] revise state shape
-- [ ] be sure moment, lodash, router, redux, sagas all in
-- [ ] integrate authentication / login
-- [ ] restructure around passed-in cfg & db (closures)
-- [ ] offload a lot of the date logic to the backend
-- [ ] finish user mutations
+- [x] js: get front end loading
+- [x] js: remove immutable
+- [x] js: inline "container" elements
+- [x] js: build "modules"
+- [x] js: be sure moment, lodash, router, redux, sagas all in
+- [ ] js: revise state shape
+- [ ] xx: integrate authentication / login
+- [ ] go: restructure around passed-in cfg & db (closures)
+- [ ] go: offload a lot of the date logic to the backend
+- [ ] go: finish user mutations
+- [ ] go: write some tests
 - [ ] spend some time on the domain model
-- [ ] hook up "brew" buttons
-  - [x] write the UI
-  - [x] hook in reducers
-  - [ ] build actions
-  - [ ] write action reducer
-- [x] fix and shore up tests
-- [ ] revisit ledger
-- [ ] revisit weather: temp
-- [ ] write in a simple sales formula
+
+
+## Rethink:
+- [ ] Store status
+  - [ ] Cash position
+  - [ ] Sales
+    - [ ] Per day at first
+    - [ ] Nice per-hour chart might be nice eventually
+    - [ ] Changes when time moves
+  - [ ] Expenses
+    - [ ] Yesterday's total
+    - [ ] Today's itemized expenses
+    - [ ] Expenses can change between turns
+  - [ ] Inventory
+    - [ ] Prepared lemonade
+    - [ ] Ingredients
+    - [ ] Can change between turns
+  - [ ] Weather
+    - [ ] Day #
+    - [ ] Forecast
+    - [ ] Yesterday
+
+## Projected Play
+1. See store status:
+  - Yesterday's sales
+  - Yesterday's expenses
+  - Weather for yesterday, today
+  -

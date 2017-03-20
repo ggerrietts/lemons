@@ -2,35 +2,10 @@ import _ from 'lodash';
 import moment from 'moment';
 
 const INITIAL_STATE = {
-  weather: {
-    actual: 0.8,
-    forecast: 0.8
-  },
-  time: {
-    now: moment(new Date(2015,6,1,9,0,0,0)),
-    last: moment(new Date(2015,6,1,8,0,0,0))
-  }
-};
-
-// actions
-export const ADVANCE_TIME = "time/ADVANCE_TIME";
-
-// action creators
-export function advanceTime(amount) {
-    return {
-        type: ADVANCE_TIME,
-        amount
-    };
-};
-
-// reducer
-export weatherReducer = (state=INITIAL_STATE, action) => {
-  switch (action.type) {
-    case ADVANCE_TIME:
-      return advanceTime(state, action.amount);
-    default:
-      return state;
-  };
+  current: 0.8,
+  forecast: 0.8,
+  timeNow: moment(new Date(2015,6,1,9,0,0,0)),
+  timeLast: moment(new Date(2015,6,1,8,0,0,0))
 };
 
 // utility functions
@@ -70,12 +45,18 @@ export const weatherTypes = [
 
 export const weatherByNumber = (number) => {
     let weather = _.last(_.filter(weatherTypes, (o) => { return o.value <= number }));
-    return fromJS(weather);
+    return weather;
 };
 
-export const advanceTime = (state, amount) => {
-    let oldNow = state.get('time');
-    return state.set('last', oldNow).set('time', moment(oldNow).add(amount, 'hours'));
+export const doAdvanceTime = (state, amount) => {
+  let oldNow = state.time;
+  return {
+    ...state,
+    time: {
+      last: oldNow,
+      now: moment(oldNow).add(amount, 'hours')
+    }
+  };
 };
 
 
@@ -94,11 +75,11 @@ export function idealTime(base, target_hr) {
 }
 
 
-export function hourlyDemandFactor(actual, target_hour, target_hourly_decay, target_rate) {
-    let ideal = idealTime(actual, target_hour);
+export function hourlyDemandFactor(current, target_hour, target_hourly_decay, target_rate) {
+    let ideal = idealTime(current, target_hour);
 
     // figure out delta from target in hours
-    let diff = (Math.abs(ideal - actual) / (1000 * 60 * 60));
+    let diff = (Math.abs(ideal - current) / (1000 * 60 * 60));
 
     let decay_factor = diff * target_hourly_decay;
 
@@ -125,9 +106,44 @@ const time_weights = {
     }
 };
 
-export function timeFactor(actual) {
+export function timeFactor(current) {
     return _.max(_.map(time_weights, (wt) => {
-        return hourlyDemandFactor(actual, wt.hour, wt.decay, wt.rate);
+        return hourlyDemandFactor(current, wt.hour, wt.decay, wt.rate);
     }));
 }
+
+
+
+
+// actions
+export const ADVANCE_TIME = "weather/ADVANCE_TIME";
+
+// action creators
+export const advanceTime = (amount) => {
+  return {
+    type: ADVANCE_TIME,
+    amount
+  };
+};
+
+// reducer
+export const weatherReducer = (state=INITIAL_STATE, action) => {
+  switch (action.type) {
+    case ADVANCE_TIME:
+      return doAdvanceTime(state, action.amount);
+    default:
+      return state;
+  }
+}
+
+// selectors 
+export const currentTime = (state) => state.weather.timeNow.format("MMMM Do, h:mm a");
+
+export const weatherForecast = (state) => {
+  let output = {};
+  _.each(['current', 'forecast'], (item) => {
+    output[item] = weatherByNumber(state.weather[item])
+  });
+  return output;
+};
 

@@ -1,6 +1,6 @@
 import React, { Component, PropTypes } from 'react';
 import { connect } from 'react-redux';
-import { purchase } from '../actions/ingredientActions.js';
+// import { purchase } from '../actions/ingredientActions.js';
 import _ from 'lodash';
 
 /* 2 lb lemons $2/lb
@@ -40,7 +40,8 @@ const mapStateToProps = (state) => {
 const mapDispatchToProps = (dispatch) => {
   return {
     onPurchaseClick: (kind) => {
-      dispatch(purchase(kind))
+      const purchase = (kind) => { type: "PURCHASE", kind };
+      dispatch(purchase(kind));
     }
   }
 }

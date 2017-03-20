@@ -24,9 +24,13 @@ services:
       - lemons.api
     links:
       - lemons.api
+    ports:
+      - 5000:5000
     environment:
       HOST: 0.0.0.0
       PORT: 5000
+    volumes:
+      - ./ui/src:/usr/src/app/src
 
   mysql:
     image: mariadb
