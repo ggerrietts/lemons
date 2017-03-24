@@ -10,13 +10,13 @@ import (
 
 func RegisterServiceHandlers(r *gin.Engine) {
 
-	protected := r.Group("/", AuthMiddleware())
+	protected := r.Group("/v1/", AuthMiddleware())
 	protected.GET("/user/:id", getUser)
 	// protected.PUT("/user/:id", putUser)
 	// protected.PATCH("/user/:id", patchUser)
 	// protected.DELETE("/user/:id", deleteUser)
 
-	unprotected := r.Group("/")
+	unprotected := r.Group("/v1/")
 	unprotected.POST("/user", postUser)
 }
 

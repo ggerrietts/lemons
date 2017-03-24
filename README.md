@@ -21,13 +21,19 @@ development techniques.
 - [x] js: inline "container" elements
 - [x] js: build "modules"
 - [x] js: be sure moment, lodash, router, redux, sagas all in
-- [ ] js: revise state shape
+- [x] js: revise state shape
 - [ ] xx: integrate authentication / login
+  - [ ] js: remove signup (add when needed)
+  - [ ] go: login endpoint returns user
 - [ ] go: restructure around passed-in cfg & db (closures)
-- [ ] go: offload a lot of the date logic to the backend
-- [ ] go: finish user mutations
-- [ ] go: write some tests
-- [ ] spend some time on the domain model
+- [ ] go: store status endpoint
+  - [ ] weather model
+  - [ ] ledger model (or just roll up?)
+  - [ ] turn dynamic (defer?)
+    - [ ] generate weather/forecast
+    - [ ] calculate sales
+    - [ ] adjust inventory
+- [ ] js: store status panel
 
 
 ## Rethink:
@@ -55,4 +61,24 @@ development techniques.
   - Yesterday's sales
   - Yesterday's expenses
   - Weather for yesterday, today
-  -
+2. Take turn:
+  - Purchase
+    - See prices
+    - See current on hand
+    - See projected on hand
+    - See projected cost
+    - Button to add qty
+    - Button to commit *
+  - Brew
+    - See current on hand
+    - See projected on hand
+    - Button to add qty
+    - See cost per unit
+    - Set price
+    - Button to commit *
+  - Run the day
+
+UI:
+- daily report: weather, sales, yesterday's expenses
+- "activity panel"
+

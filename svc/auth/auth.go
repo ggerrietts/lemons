@@ -114,10 +114,10 @@ func getLogout(c *gin.Context) {
 
 func RegisterAuthHandlers(r *gin.Engine) {
 
-	protected := r.Group("/", AuthMiddleware())
+	protected := r.Group("/v1/", AuthMiddleware())
 	protected.GET("/logout", getLogout)
 
-	unprotected := r.Group("/")
+	unprotected := r.Group("/v1/")
 	unprotected.POST("/login", postLogin)
 }
 
