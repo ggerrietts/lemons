@@ -1,4 +1,4 @@
-package lemonauth
+package lemonsauth
 
 import (
 	"github.com/elithrar/simple-scrypt"
