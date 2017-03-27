@@ -8,7 +8,7 @@ const INITIAL_STATE = {
 
 // actions
 const PURCHASE = 'ledger/PURCHASE';
-const SALE = 'ledger/SALE';
+// const SALE = 'ledger/SALE';
 
 // action creators
 // XXX

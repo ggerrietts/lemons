@@ -23,9 +23,11 @@ development techniques.
 - [x] js: be sure moment, lodash, router, redux, sagas all in
 - [x] js: revise state shape
 - [ ] xx: integrate authentication / login
-  - [ ] js: remove signup (add when needed)
-  - [ ] go: login endpoint returns user
+  - [x] js: remove signup (add when needed)
+  - [x] go: login endpoint returns user
+  - [x] js: debug user fetch from login
 - [ ] go: restructure around passed-in cfg & db (closures)
+- [ ] go: restructure to be top-level
 - [ ] go: store status endpoint
   - [ ] weather model
   - [ ] ledger model (or just roll up?)

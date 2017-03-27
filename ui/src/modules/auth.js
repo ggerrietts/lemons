@@ -1,7 +1,7 @@
 import _ from 'lodash';
-import { put, call, take } from 'redux-saga/effects';
+import { put, call, take, select } from 'redux-saga/effects';
 
-import { post } from '../utils/xhr';
+import { post, get } from '../utils/xhr';
 
 const INITIAL_STATE = {
   user: null,
@@ -10,7 +10,7 @@ const INITIAL_STATE = {
 
 // action types
 const LOGIN = "auth/LOGIN";
-const SIGNUP = "auth/SIGNUP";
+const CHECK_SESSION = "auth/CHECK_SESSION";
 
 // one success and one failure for both
 const AUTH_SUCCESS = "auth/AUTH_SUCCESS";
@@ -19,7 +19,7 @@ const LOGOUT = "auth/LOGOUT";
 
 // action creators
 export const login = (email, password) => { return { type: LOGIN, email, password } };
-export const signup = (email, name, password) => { return { type: SIGNUP, email, name, password } };
+export const checkSession = () => { return { type: CHECK_SESSION } };
 
 const authSuccess = (user) => { return { type: AUTH_SUCCESS, user } };
 const logout = () => { return { type: LOGOUT } };
@@ -29,7 +29,6 @@ const logout = () => { return { type: LOGOUT } };
 export const authReducer = (state=INITIAL_STATE, action) => {
   switch (action.type) {
     case LOGIN:
-    case SIGNUP:
       return {
         isLoading: true,
         ...state
@@ -57,10 +56,9 @@ function* loginWorker(action) {
     password: action.password
   };
   try {
-    console.log("gonna try with this payload:");
-    console.log(payload);
     const success = yield post('/v1/login', payload);
-    yield put(authSuccess(success));
+    const json = yield success.json();
+    yield put(authSuccess(json.user));
   }
   catch (e) {
     yield put(logout());
@@ -75,34 +73,34 @@ function* loginWatcher() {
   }
 }
 
-// signup doesn't log you in today so should fix that
-function* signupWorker(action) {
-  const payload = {
-    email: action.email,
-    name: action.name,
-    password: action.password
-  };
+function* checkSessionWorker() {
   try {
-    const success = yield post('/v1/user', payload);
-    yield put(authSuccess(success));
+    const state = yield select();
+    if (state.auth.authenticatedUser) {
+      return
+    }
+    const success = yield get('/v1/login');
+    const json = yield success.json();
+    yield put(authSuccess(json.user));
   }
   catch (e) {
     yield put(logout());
   }
 }
 
-function* signupWatcher() {
+function* checkSessionWatcher() {
   while (true) {
-    const action = yield take(SIGNUP)
-    yield call(signupWorker, action);
+    const action = yield take(CHECK_SESSION);
+    yield call(checkSessionWorker, action);
   }
 }
 
-
-export function* authWatcher() {
-  yield [loginWatcher(), signupWatcher()];
+export function *authWatcher() {
+  yield [
+    checkSessionWatcher(),
+    loginWatcher()
+  ];
 }
-
 // selectors
 
 export const isLoading = (state) => state.auth.isLoading;

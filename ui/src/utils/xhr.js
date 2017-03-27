@@ -7,6 +7,7 @@ export function post(path, payload) {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
+      credentials: "include",
       method: "POST",
       body: JSON.stringify(payload)
     });
@@ -16,6 +17,7 @@ export function get(path) {
   return fetch(path,
     {
       headers: { 'Accept': 'application/json' },
+      credentials: "include",
       method: "GET"
     });
 }
@@ -27,6 +29,7 @@ export function put(path, payload) {
         'Accept': 'application/json',
         'Content-Type': 'application/json'
       },
+      credentials: "include",
       method: "PUT",
       body: JSON.stringify(payload)
     });

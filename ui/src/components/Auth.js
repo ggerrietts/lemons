@@ -1,30 +1,51 @@
 
 import React from 'react';
-import { Route, Redirect, Link } from 'react-router-dom';
+import { Route, Redirect } from 'react-router-dom';
 import { connect } from 'react-redux';
 import { reduxForm, Field } from 'redux-form';
-import { isAuthenticated, isLoading, login, signup } from '../modules/auth';
+import { isAuthenticated, isLoading, login, checkSession } from '../modules/auth';
+import { LoadingComponent } from './Loading';
 
-// route wrapper internals
-const UnconnectedAuthRoute = ({ component, ...rest }) => (
-  <Route {...rest} render={props => (
-    props.authenticated ? (
-      React.createElement(component, props)
-    ) : (
-      <Redirect to={{
-        pathname: '/login',
-        state: { from: props.location }
-      }}/>
-    )
-  )}/>
-);
 
-const mapAuthStateToProps = (state, props) => {
-  return {
-    authenticated: isAuthenticated(state), 
-    ...props
+// HOC for publishing authenticated components
+export function Authenticate(WrappedComponent) {
+  class UnconnectedAuthenticatedComponent extends React.Component {
+    componentDidMount() { 
+      this.props.checkSession();
+    }
+
+    render() {
+      if (this.props.authenticated) {
+        return <WrappedComponent />;
+      } else if (this.props.loading) {
+        return <LoadingComponent />;
+      } else { 
+        return (
+          <Redirect to={{
+            pathname: '/login',
+            state: { from: this.props.location }
+          }} />
+        );
+      }
+    };
   }
-};
+
+  const mapAuthDispatchToProps = (dispatch) => {
+    return {
+      checkSession: () => dispatch(checkSession())
+    }
+  };
+
+  const mapAuthStateToProps = (state, props) => {
+    return {
+      loading: isLoading(state),
+      authenticated: isAuthenticated(state), 
+      ...props
+    }
+  };
+
+  return connect(mapAuthStateToProps, mapAuthDispatchToProps)(UnconnectedAuthenticatedComponent);
+}
 
 
 const UnwrappedLoginForm = (props) => {
@@ -84,7 +105,6 @@ class UnconnectedLogin extends React.Component {
       <div className="panel panel-default">
         <div className="panel-body">
           <LoginForm onSubmit={ this.handleSubmit } />
-          <small><em>Don't yet have an account? <Link to="/signup">Create</Link> one now!</em></small>
         </div>
       </div>
     );
@@ -105,69 +125,6 @@ const mapLoginDispatchToProps = (dispatch, props) => {
 };
 
 
-// signup internals
-class UnconnectedSignup extends React.Component {
-  static propTypes = {
-    submitSignup: React.PropTypes.func.isRequired,
-    authenticated: React.PropTypes.bool.isRequired,
-    loading: React.PropTypes.bool.isRequired
-  }
-
-  render () {
-    if (this.props.authenticated) {
-      return (
-        <Redirect to={"/"} />
-      );
-    }
-    if (this.props.loading) {
-      return (
-        <div> Loading </div>
-      );
-    }
-    return (
-      <div className="panel panel-default">
-        <div className="panel-body">
-          <form>
-            <div className="form-group">
-              <label htmlFor="emailAddress">email address</label>
-              <input type="email" className="form-control" id="emailAddress" placeholder="Email" />
-            </div>
-            <div className="form-group">
-              <label htmlFor="name">name</label>
-              <input type="text" className="form-control" id="name" placeholder="Name"/>
-            </div>
-            <div className="form-group">
-              <label htmlFor="password">password</label>
-              <input type="password" className="form-control" id="password" placeholder="Password"/>
-            </div>
-            <div className="form-group">
-              <label htmlFor="confirmPassword">confirm</label>
-              <input type="password" className="form-control" id="confirmPassword" placeholder="Confirm Password"/>
-            </div>
-            <button type="submit" className="btn btn-default" onClick={this.props.submitSignup}>Submit</button>
-          </form>
-          <em>Already have an account? <Link to="/signup">Log in</Link> now!</em>
-        </div>
-      </div>
-    );
-  }
-}
-
-const mapSignupStateToProps = (state, props) => {
-  return {
-    authenticated: isAuthenticated(state),
-    loading: isLoading(state)
-  }
-};
-
-const mapSignupDispatchToProps = (dispatch, props) => {
-  return {
-    submitSignup: (email, name, password) => dispatch(signup(email, name, password))
-  }
-};
-
 // exported components
-export const AuthRoute = connect(mapAuthStateToProps)(UnconnectedAuthRoute);
 export const Login = connect(mapLoginStateToProps, mapLoginDispatchToProps)(UnconnectedLogin);
-export const Signup = connect(mapSignupStateToProps, mapSignupDispatchToProps)(UnconnectedSignup);
 
