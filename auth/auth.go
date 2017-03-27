@@ -1,12 +1,11 @@
-package lemonauth
+package lemonsauth
 
 import (
-	"fmt"
 	"github.com/dgrijalva/jwt-go"
 	"github.com/ggerrietts/lemons/svc/util"
+	"github.com/mgutz/logxi/v1"
 	"gopkg.in/gin-gonic/gin.v1"
 	"gopkg.in/guregu/null.v3"
-	"log"
 	"net/http"
 	"time"
 )
@@ -53,103 +52,11 @@ func unauthorized(c *gin.Context, code int, message string) {
 func setNewCookie(c *gin.Context, userId int64) error {
 	tokenstr, err := generateToken(userId)
 	if err == nil {
-		lemonutils.GinDebug("Setting token: ", tokenstr)
+		log.Debug("Setting token: ", "token", tokenstr)
 		c.SetCookie("jwt_token", tokenstr, 0, "", "", false, false)
 		return nil
 	}
 	return err
-}
-
-type Login struct {
-	Email    string `form:"email" json:"email" binding:"required"`
-	Password string `form:"password" json:"password" binding:"required"`
-}
-
-func getLogin(c *gin.Context) {
-	var user User
-	var uid int64
-
-	val, ok := c.Get("userId")
-	if !ok {
-		lemonutils.GinDebug("No cookie found, I guess!")
-		unauthorized(c, http.StatusUnauthorized, "not logged in")
-	}
-	uid, ok = val.(int64)
-	if !ok {
-		lemonutils.GinDebug("ERROR: bad decode of uid")
-		unauthorized(c, http.StatusUnauthorized, "user not found")
-	}
-	db, err := lemonutils.GetDb()
-	if err != nil {
-		lemonutils.GinDebug("ERROR: database error", err)
-		unauthorized(c, http.StatusInternalServerError, "Please retry.")
-		return
-	}
-	user, err = GetUser(db, uid)
-	if err != nil {
-		lemonutils.GinDebug("ERROR: no such user omae", err)
-		unauthorized(c, http.StatusUnauthorized, "user not found")
-	}
-	user.Sanitize()
-	c.JSON(http.StatusOK, gin.H{"user": user})
-}
-
-func postLogin(c *gin.Context) {
-	// process post
-	// c.SetCookie on success
-	var loginVals Login
-	var user User
-	if e1 := c.BindJSON(&loginVals); e1 != nil {
-		lemonutils.GinDebug("ERROR: bad form values", e1)
-		unauthorized(c, http.StatusBadRequest, "Missing 'email' or 'password'.")
-		return
-	}
-	db, err := lemonutils.GetDb()
-	if err != nil {
-		lemonutils.GinDebug("ERROR: database error", err)
-		unauthorized(c, http.StatusInternalServerError, "Please retry.")
-		return
-	}
-	user, err = GetUserByEmail(db, loginVals.Email)
-	if err != nil {
-		lemonutils.GinDebug("Error: bad fetch", err)
-		unauthorized(c, http.StatusUnauthorized, "Unauthorized.")
-		return
-	}
-	if err = CheckPassword(user.Password, loginVals.Password); err != nil {
-		lemonutils.GinDebug("Error: bad password", err)
-		unauthorized(c, http.StatusUnauthorized, "Unauthorized.")
-		return
-	}
-	if err = setNewCookie(c, user.ID); err != nil {
-		lemonutils.GinDebug("Error: failed setting cookie", err)
-		unauthorized(c, http.StatusInternalServerError, "Internal server error.")
-		return
-	}
-	user.LastLoginAt = null.TimeFrom(time.Now())
-	err = user.Update(db, user.OmitForFields([]string{"LastLoginAt"}))
-	if err != nil {
-		lemonutils.GinDebug("Error: failed updating last login", err)
-		// let this one pass
-	}
-	user.Sanitize()
-	c.JSON(http.StatusOK, gin.H{"user": user})
-}
-
-func getLogout(c *gin.Context) {
-	max_age := 6 * 60 * 60
-	c.SetCookie("jwt_token", "deleted", max_age, "", "", true, true)
-	unauthorized(c, http.StatusOK, "Logged out.")
-}
-
-func RegisterAuthHandlers(r *gin.Engine) {
-
-	protected := r.Group("/v1/", AuthMiddleware())
-	protected.GET("/logout", getLogout)
-	protected.GET("/login", getLogin)
-
-	unprotected := r.Group("/v1/")
-	unprotected.POST("/login", postLogin)
 }
 
 func AuthMiddleware() gin.HandlerFunc {
@@ -157,14 +64,14 @@ func AuthMiddleware() gin.HandlerFunc {
 		// get cookie
 		cookiestr, err := c.Cookie("jwt_token")
 		if err != nil {
-			lemonutils.GinDebug("ERROR: no cookie", err)
+			log.Debug("ERROR: no cookie", "error", err)
 			unauthorized(c, http.StatusUnauthorized, "Unauthorized.")
 		}
 
 		// decode
 		claims, err := decodeToken(cookiestr)
 		if err != nil {
-			lemonutils.GinDebug("ERROR: bad decode", err)
+			log.Debug("ERROR: bad decode", "error", err)
 			unauthorized(c, http.StatusUnauthorized, err.Error())
 			return
 		}
@@ -173,7 +80,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		userId, id_ok := claims["id"].(float64)
 		issuedTs, iss_ok := claims["iat"].(float64)
 		if !(id_ok && iss_ok) {
-			lemonutils.GinDebug("ERROR: type assertions failed -- id", id_ok, "iss", iss_ok)
+			log.Debug("ERROR: type assertions failed", "id", id_ok, "iss", iss_ok)
 			unauthorized(c, http.StatusBadRequest, "invalid token values")
 			return
 		}
@@ -185,7 +92,7 @@ func AuthMiddleware() gin.HandlerFunc {
 			cookieFail := setNewCookie(c, int64(userId))
 			if cookieFail != nil {
 				// we'll let this slide i guess
-				log.Printf("error refreshing token: %v", err)
+				log.Debug("error refreshing token:", "error", err)
 			}
 		}
 

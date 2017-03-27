@@ -1,24 +1,13 @@
-package lemonauth
+package lemonsauth
 
 import (
 	"errors"
 	"github.com/ggerrietts/lemons/svc/util"
+	"github.com/mgutz/logxi/v1"
 	"gopkg.in/gin-gonic/gin.v1"
 	"net/http"
 	"strconv"
 )
-
-func RegisterServiceHandlers(r *gin.Engine) {
-
-	protected := r.Group("/v1/", AuthMiddleware())
-	protected.GET("/user/:id", getUser)
-	// protected.PUT("/user/:id", putUser)
-	// protected.PATCH("/user/:id", patchUser)
-	// protected.DELETE("/user/:id", deleteUser)
-
-	unprotected := r.Group("/v1/")
-	unprotected.POST("/user", postUser)
-}
 
 var (
 	ErrInconsistentIDs = errors.New("inconsistent IDs")
@@ -27,51 +16,54 @@ var (
 )
 
 // User functions
-func postUser(ctx *gin.Context) {
-	db, err := lemonutils.GetDb()
-	if err != nil {
-		lemonutils.GinDebug("Error: database failure", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "database failure"})
-		return
-	}
-	var u User
-	ctx.BindJSON(&u)
-	u.Password, err = HashPassword(u.Password)
-	if err != nil {
-		lemonutils.GinDebug("Error: hashing failure", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "hashing failure"})
-	} else if err = u.Create(db); err != nil {
-		lemonutils.GinDebug("Error: database failure", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "database failure"})
-	} else {
-		u.Sanitize()
-		ctx.JSON(http.StatusOK, gin.H{"result": u})
+func postUser(db *sqlx.DB) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		if err != nil {
+			log.Debug("Error: database failure", "error", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "database failure"})
+			return
+		}
+		var u User
+		ctx.BindJSON(&u)
+		u.Password, err = HashPassword(u.Password)
+		if err != nil {
+			lemonutils.GinDebug("Error: hashing failure", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "hashing failure"})
+		} else if err = u.Create(svc.Db); err != nil {
+			lemonutils.GinDebug("Error: database failure", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "database failure"})
+		} else {
+			u.Sanitize()
+			ctx.JSON(http.StatusOK, gin.H{"result": u})
+		}
 	}
 }
 
-func getUser(ctx *gin.Context) {
-	var user User
-	var id int64
-	db, err := lemonutils.GetDb()
-	if err != nil {
-		lemonutils.GinDebug("Error: database failure", err)
-		ctx.JSON(http.StatusInternalServerError, gin.H{"error": "database failure"})
+func getUser(db *sqlx.DB) gin.HandlerFunc {
+	return func(ctx *gin.Context) {
+		var user User
+		var id int64
+		db, err := lemonutils.GetDb()
+		if err != nil {
+			log.Debug("Error: database failure", "error", err)
+			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "database failure"})
+			return
+		}
+		string_id := ctx.Params.ByName("id")
+		id, err = strconv.ParseInt(string_id, 10, 64)
+		if err != nil {
+			log.Debug("Error: bad user id", "error", err)
+			unauthorized(ctx, http.StatusBadRequest, "bad user id")
+		}
+		if user, err = GetUser(db, id); err != nil {
+			log.Debug("Error: record not found", "error", err)
+			ctx.JSON(http.StatusNotFound, gin.H{"error": "record not found"})
+			return
+		}
+		user.Sanitize()
+		ctx.JSON(http.StatusOK, gin.H{"user": user})
 		return
 	}
-	string_id := ctx.Params.ByName("id")
-	id, err = strconv.ParseInt(string_id, 10, 64)
-	if err != nil {
-		lemonutils.GinDebug("Error: bad user id", err)
-		unauthorized(ctx, http.StatusBadRequest, "bad user id")
-	}
-	if user, err = GetUser(db, id); err != nil {
-		lemonutils.GinDebug("Error: record not found", err)
-		ctx.JSON(http.StatusNotFound, gin.H{"error": "record not found"})
-		return
-	}
-	user.Sanitize()
-	ctx.JSON(http.StatusOK, gin.H{"user": user})
-	return
 }
 
 // func putUser(ctx *gin.Context) {

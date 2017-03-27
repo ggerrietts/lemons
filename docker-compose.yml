@@ -3,7 +3,7 @@ services:
   lemons.api:
     image: lemonsvc
     build:
-      context: ./svc/
+      context: ./
     container_name: lemons.api
     depends_on:
       - mysql

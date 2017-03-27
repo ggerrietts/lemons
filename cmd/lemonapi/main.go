@@ -4,26 +4,18 @@ import (
 	"gopkg.in/gin-gonic/gin.v1"
 
 	"github.com/ggerrietts/lemons/svc/auth"
-	"github.com/ggerrietts/lemons/svc/util"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
-	"log"
 )
 
-type LemonsService struct {
+type LemonsConfig struct {
 	DbDSN  string
 	Listen string
 	Secret string
-	Db     *sqlx.DB
 }
 
-func (s *LemonsService) GinDebug(v ...interface{}) {
-	if gin.IsDebugging() {
-		log.Println(v...)
-	}
-}
-func (s *LemonsService) GetConfig() {
-	var config = Configuration{}
+func GetConfig() LemonsConfig {
+	var config = LemonsConfig{}
 	s.DbDSN = os.Getenv("DB_DSN")
 	if s.DbDSN == "" {
 		s.DbDSN = "root:root@tcp(mysql)"
@@ -40,8 +32,7 @@ func (s *LemonsService) GetConfig() {
 }
 
 func main() {
-	var svc LemonsService
-	svc.GetConfig()
+	cfg := GetConfig()
 	db, err := sqlx.Connect("mysql", cfg.DbDSN)
 	if err != nil {
 		panic("o noes the databases")
