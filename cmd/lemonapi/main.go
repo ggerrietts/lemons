@@ -3,7 +3,7 @@ package main
 import (
 	"gopkg.in/gin-gonic/gin.v1"
 
-	"github.com/ggerrietts/lemons/svc/auth"
+	"github.com/ggerrietts/lemons/auth"
 	_ "github.com/go-sql-driver/mysql"
 	"github.com/jmoiron/sqlx"
 )
@@ -37,11 +37,14 @@ func main() {
 	if err != nil {
 		panic("o noes the databases")
 	}
-	svc.Db = db
+	svc := lemonsauth.LemonsAuthenticationService{
+		Secret: s.Secret,
+		Db:     db,
+	}
 
 	r := gin.Default()
-	lemonsauth.RegisterAuthHandlers(r)
-	lemonsauth.RegisterServiceHandlers(r)
+	lemonsauth.RegisterAuthHandlers(r, svc)
+	lemonsauth.RegisterServiceHandlers(r, svc)
 
 	r.Run(cfg.Listen)
 
