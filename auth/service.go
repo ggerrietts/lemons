@@ -70,7 +70,7 @@ func getUser(ctx *gin.Context) {
 		return
 	}
 	user.Sanitize()
-	ctx.JSON(http.StatusOK, gin.H{"result": user})
+	ctx.JSON(http.StatusOK, gin.H{"user": user})
 	return
 }
 

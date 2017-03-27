@@ -1,4 +1,4 @@
-package lemonauth
+package lemonsauth
 
 import (
 	_ "github.com/go-sql-driver/mysql"

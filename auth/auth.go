@@ -65,6 +65,35 @@ type Login struct {
 	Password string `form:"password" json:"password" binding:"required"`
 }
 
+func getLogin(c *gin.Context) {
+	var user User
+	var uid int64
+
+	val, ok := c.Get("userId")
+	if !ok {
+		lemonutils.GinDebug("No cookie found, I guess!")
+		unauthorized(c, http.StatusUnauthorized, "not logged in")
+	}
+	uid, ok = val.(int64)
+	if !ok {
+		lemonutils.GinDebug("ERROR: bad decode of uid")
+		unauthorized(c, http.StatusUnauthorized, "user not found")
+	}
+	db, err := lemonutils.GetDb()
+	if err != nil {
+		lemonutils.GinDebug("ERROR: database error", err)
+		unauthorized(c, http.StatusInternalServerError, "Please retry.")
+		return
+	}
+	user, err = GetUser(db, uid)
+	if err != nil {
+		lemonutils.GinDebug("ERROR: no such user omae", err)
+		unauthorized(c, http.StatusUnauthorized, "user not found")
+	}
+	user.Sanitize()
+	c.JSON(http.StatusOK, gin.H{"user": user})
+}
+
 func postLogin(c *gin.Context) {
 	// process post
 	// c.SetCookie on success
@@ -103,12 +132,13 @@ func postLogin(c *gin.Context) {
 		lemonutils.GinDebug("Error: failed updating last login", err)
 		// let this one pass
 	}
-
-	c.JSON(http.StatusOK, gin.H{"result": "OK"})
+	user.Sanitize()
+	c.JSON(http.StatusOK, gin.H{"user": user})
 }
 
 func getLogout(c *gin.Context) {
-	c.SetCookie("jwt_token", "deleted", 0, "", "", true, true)
+	max_age := 6 * 60 * 60
+	c.SetCookie("jwt_token", "deleted", max_age, "", "", true, true)
 	unauthorized(c, http.StatusOK, "Logged out.")
 }
 
@@ -116,6 +146,7 @@ func RegisterAuthHandlers(r *gin.Engine) {
 
 	protected := r.Group("/v1/", AuthMiddleware())
 	protected.GET("/logout", getLogout)
+	protected.GET("/login", getLogin)
 
 	unprotected := r.Group("/v1/")
 	unprotected.POST("/login", postLogin)
