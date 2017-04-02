@@ -1,22 +1,20 @@
 package lemonsauth
 
 import (
+	"fmt"
 	"github.com/dgrijalva/jwt-go"
-	"github.com/ggerrietts/lemons/svc/util"
 	"github.com/mgutz/logxi/v1"
 	"gopkg.in/gin-gonic/gin.v1"
-	"gopkg.in/guregu/null.v3"
 	"net/http"
 	"time"
 )
 
-func decodeToken(tokenString string) (jwt.MapClaims, error) {
-	cfg := lemonutils.GetConfig()
+func decodeToken(tokenString string, secret string) (jwt.MapClaims, error) {
 	token, err := jwt.Parse(tokenString, func(token *jwt.Token) (interface{}, error) {
 		if _, ok := token.Method.(*jwt.SigningMethodHMAC); !ok {
 			return 0, fmt.Errorf("Unexpected signing method: %v", token.Header["alg"])
 		}
-		return []byte(cfg.Secret), nil
+		return []byte(secret), nil
 	})
 	if err != nil {
 		return jwt.MapClaims{}, err
@@ -29,8 +27,7 @@ func decodeToken(tokenString string) (jwt.MapClaims, error) {
 	}
 }
 
-func generateToken(id int64) (string, error) {
-	cfg := lemonutils.GetConfig()
+func generateToken(id int64, secret string) (string, error) {
 	// user ID, timeout?
 	expire := time.Now().Add(time.Hour * 6)
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
@@ -38,7 +35,7 @@ func generateToken(id int64) (string, error) {
 		"exp": expire.Unix(),
 		"iat": time.Now().Unix(),
 	})
-	return token.SignedString([]byte(cfg.Secret))
+	return token.SignedString([]byte(secret))
 }
 
 func unauthorized(c *gin.Context, code int, message string) {
@@ -49,8 +46,8 @@ func unauthorized(c *gin.Context, code int, message string) {
 	c.Abort()
 }
 
-func setNewCookie(c *gin.Context, userId int64) error {
-	tokenstr, err := generateToken(userId)
+func setNewCookie(c *gin.Context, userId int64, secret string) error {
+	tokenstr, err := generateToken(userId, secret)
 	if err == nil {
 		log.Debug("Setting token: ", "token", tokenstr)
 		c.SetCookie("jwt_token", tokenstr, 0, "", "", false, false)
@@ -59,7 +56,7 @@ func setNewCookie(c *gin.Context, userId int64) error {
 	return err
 }
 
-func AuthMiddleware() gin.HandlerFunc {
+func AuthMiddleware(secret string) gin.HandlerFunc {
 	return func(c *gin.Context) {
 		// get cookie
 		cookiestr, err := c.Cookie("jwt_token")
@@ -69,7 +66,7 @@ func AuthMiddleware() gin.HandlerFunc {
 		}
 
 		// decode
-		claims, err := decodeToken(cookiestr)
+		claims, err := decodeToken(cookiestr, secret)
 		if err != nil {
 			log.Debug("ERROR: bad decode", "error", err)
 			unauthorized(c, http.StatusUnauthorized, err.Error())
@@ -89,7 +86,7 @@ func AuthMiddleware() gin.HandlerFunc {
 
 		// create new cookie maybe
 		if time.Now().After(issued.Add(time.Hour)) {
-			cookieFail := setNewCookie(c, int64(userId))
+			cookieFail := setNewCookie(c, int64(userId), secret)
 			if cookieFail != nil {
 				// we'll let this slide i guess
 				log.Debug("error refreshing token:", "error", err)

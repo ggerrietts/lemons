@@ -26,16 +26,16 @@ development techniques.
   - [x] js: remove signup (add when needed)
   - [x] go: login endpoint returns user
   - [x] js: debug user fetch from login
-- [ ] go: restructure around passed-in cfg & db (closures)
-- [ ] go: restructure to be top-level
+  - [x] js: debug routes & such
+- [x] go: restructure around passed-in cfg & db (closures)
+- [x] go: restructure to be top-level
 - [ ] go: store status endpoint
-  - [ ] weather model
-  - [ ] ledger model (or just roll up?)
-  - [ ] turn dynamic (defer?)
-    - [ ] generate weather/forecast
+  - [ ] turn dynamic
     - [ ] calculate sales
     - [ ] adjust inventory
+  - [ ] ledger model (or just roll up?)
 - [ ] js: store status panel
+- [ ] weather model
 
 
 ## Rethink:

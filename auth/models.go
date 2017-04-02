@@ -71,8 +71,8 @@ func (u *User) Update(db *sqlx.DB, omit map[string]bool) error {
 
 func (u *User) Create(db *sqlx.DB) error {
 	stmt := "INSERT INTO users "
-	stmt = stmt + "(email, name, password, updated_at, created_at) "
-	stmt = stmt + "VALUES (:email, :name, :password, NOW(), NOW())"
+	stmt += "(email, name, password, updated_at, created_at) "
+	stmt += "VALUES (:email, :name, :password, NOW(), NOW())"
 	result, err := db.NamedExec(stmt, u)
 	if err != nil {
 		return err

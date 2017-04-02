@@ -2,7 +2,8 @@ package lemonsauth
 
 import (
 	"errors"
-	"github.com/ggerrietts/lemons/svc/util"
+	_ "github.com/go-sql-driver/mysql"
+	"github.com/jmoiron/sqlx"
 	"github.com/mgutz/logxi/v1"
 	"gopkg.in/gin-gonic/gin.v1"
 	"net/http"
@@ -18,19 +19,16 @@ var (
 // User functions
 func postUser(db *sqlx.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
-		if err != nil {
-			log.Debug("Error: database failure", "error", err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "database failure"})
-			return
-		}
 		var u User
+		var err error
+
 		ctx.BindJSON(&u)
 		u.Password, err = HashPassword(u.Password)
 		if err != nil {
-			lemonutils.GinDebug("Error: hashing failure", err)
+			log.Debug("Error: hashing failure", "error", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "hashing failure"})
-		} else if err = u.Create(svc.Db); err != nil {
-			lemonutils.GinDebug("Error: database failure", err)
+		} else if err = u.Create(db); err != nil {
+			log.Debug("Error: database failure", "error", err)
 			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "database failure"})
 		} else {
 			u.Sanitize()
@@ -43,12 +41,8 @@ func getUser(db *sqlx.DB) gin.HandlerFunc {
 	return func(ctx *gin.Context) {
 		var user User
 		var id int64
-		db, err := lemonutils.GetDb()
-		if err != nil {
-			log.Debug("Error: database failure", "error", err)
-			ctx.JSON(http.StatusInternalServerError, gin.H{"error": "database failure"})
-			return
-		}
+		var err error
+
 		string_id := ctx.Params.ByName("id")
 		id, err = strconv.ParseInt(string_id, 10, 64)
 		if err != nil {

@@ -81,7 +81,11 @@ function* checkSessionWorker() {
     }
     const success = yield get('/v1/login');
     const json = yield success.json();
-    yield put(authSuccess(json.user));
+    if (success.ok && json && json.user) {
+      yield put(authSuccess(json.user));
+    } else {
+      yield put(logout());
+    }
   }
   catch (e) {
     yield put(logout());
