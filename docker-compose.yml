@@ -32,9 +32,9 @@ services:
     volumes:
       - ./ui/src:/usr/src/app/src
 
-  mysql:
+  lemons.db:
     image: mariadb
-    container_name: mysql
+    container_name: lemons.db
     volumes:
       - mysqldb:/var/lib/mysql
     environment:
