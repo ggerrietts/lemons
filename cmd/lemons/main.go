@@ -9,4 +9,6 @@ import (
 func main() {
 	server.LoadConfig()
 	server.BootBanner()
+	r := server.LoadRoutes()
+	server.StartServer(r)
 }

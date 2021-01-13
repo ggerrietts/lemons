@@ -1,0 +1,2 @@
+blankdb:
+	./scripts/blank.sh

@@ -1,23 +1,22 @@
-USE lemons;
+DROP TABLE IF EXISTS `lemons`.`storefront`;
+CREATE TABLE IF NOT EXISTS `lemons`.`storefront` (
+  `user_id` varchar(30) NOT NULL PRIMARY KEY,
+  `turn` int NOT NULL,
+  `backstock` int NOT NULL,
+  `cash` int NOT NULL,
 
-CREATE TABLE IF NOT EXISTS `shops` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `user_id` int NOT NULL,
-  `servings` int NOT NULL,
-  `cash` double NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uix_shops_uid` (`user_id`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+  `cur_temp` int NOT NULL,
+  `for_temp` int NOT NULL,
+  `cur_prec` int NOT NULL,
+  `for_prec` int NOT NULL,
 
-CREATE TABLE IF NOT EXISTS `inventories` (
-  `id` int NOT NULL AUTO_INCREMENT,
-  `updated_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `created_at` timestamp NOT NULL DEFAULT '0000-00-00 00:00:00',
-  `shop_id` int NOT NULL,
-  `ingredient` varchar(255) NOT NULL,
-  `quantity` double NOT NULL,
-  PRIMARY KEY (`id`),
-  UNIQUE KEY `uix_inventories_shops` (`shop_id`, `ingredient`)
-) ENGINE=InnoDB AUTO_INCREMENT=1 DEFAULT CHARSET=utf8;
+  `purchased` int NOT NULL,
+  `prepared` int NOT NULL,
+  `sales` int NOT NULL,
+  `waste` int NOT NULL,
+  `demand` int NOT NULL,
+
+  `purchasing` int NOT NULL,
+  `preparing` int NOT NULL,
+  `price` int NOT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8;
